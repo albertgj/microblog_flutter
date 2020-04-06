@@ -4,6 +4,7 @@ import 'package:microblog/services/CommentService.dart';
 import 'package:microblog/services/PersonaService.dart';
 import 'package:microblog/services/PostService.dart';
 import 'package:microblog/view/MainView.dart';
+import 'package:microblog/resources/PostApiProvider.dart';
 
 void setupLocator() {
   GetIt.I.registerLazySingleton<PersonaService>(() => PersonaService());
@@ -13,6 +14,8 @@ void setupLocator() {
 
 void main() {
   setupLocator();
+  final merda = PostApiProvider();
+  merda.findAllPosts();
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,

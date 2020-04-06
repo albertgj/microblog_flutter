@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:microblog/model/Comments.dart';
 import 'package:microblog/model/Persone.dart';
-import 'package:microblog/model/Post.dart';
 import 'package:microblog/services/API.dart';
 import 'package:microblog/services/PostService.dart';
 
@@ -23,7 +22,7 @@ class _PostPageState extends State<PostPage> {
   PostService get postService => GetIt.I<PostService>();
   API<List<Comment>> _apiResponse;
   bool _isLoading = false;
-  final _formKey = GlobalKey<FormState>();
+  //final _formKey = GlobalKey<FormState>();
   final _textController = TextEditingController();
 
   _fetchComments() async {

@@ -6,7 +6,7 @@ import 'package:microblog/services/API.dart';
 import 'package:http/http.dart' as http;
 
 class PostService {
-  static const url = 'url';
+  static const url = 'http://localhost:8080/api/v2/';
 
   Future<API<List<Post>>> findAllPosts() async {
     return http.get(url + 'posts/').then((data) {

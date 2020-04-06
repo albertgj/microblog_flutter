@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:microblog/services/API.dart';
 
 class PersonaService {
-  static const url = 'url';
+  static const url = 'http://localhost:8080/api/v2/';
 
   Future<List<String>> findAll() async {
     return null;
