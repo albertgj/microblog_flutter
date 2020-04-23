@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:microblog/blocs/PostBloc.dart';
 import 'package:microblog/model/Post.dart';
+import 'package:microblog/view/AddPost.dart';
 import 'package:microblog/view/PostDetail.dart';
 
 class MyApp extends StatefulWidget {
@@ -43,6 +44,17 @@ class _MyAppState extends State<MyApp> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddPost(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 
@@ -82,7 +94,9 @@ class _MyAppState extends State<MyApp> {
                   Icon(Icons.person, color: Colors.yellowAccent),
                   Text(
                     " ${snapshot.data[index].persona.username}",
-                    style: TextStyle(color: Colors.white),
+                    style: snapshot.data[index].persona.username == 'aaa'
+                        ? TextStyle(color: Colors.yellowAccent)
+                        : TextStyle(color: Colors.white),
                   )
                 ],
               ),
