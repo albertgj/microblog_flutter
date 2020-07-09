@@ -1,4 +1,4 @@
-import 'package:microblog/model/Persone.dart';
+import 'package:microblog/model/User.dart';
 import 'package:microblog/model/Post.dart';
 
 class Comment {
@@ -6,9 +6,9 @@ class Comment {
   String date;
   String testo;
   Post post;
-  Persona persona;
+  User user;
 
-  Comment({this.id, this.date, this.testo, this.post, this.persona});
+  Comment({this.id, this.date, this.testo, this.post, this.user});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -18,18 +18,13 @@ class Comment {
       post: Post.fromJson(
         json['post'],
       ),
-      persona: Persona.fromJson(
-        json['persona'],
+      user: User.fromJson(
+        json['user'],
       ),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'date': date,
-      'testo': testo,
-      'persona': persona
-    };
+    return {'id': id, 'date': date, 'testo': testo, 'user': user};
   }
 }

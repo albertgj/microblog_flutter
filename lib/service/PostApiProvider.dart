@@ -5,23 +5,22 @@ import 'package:microblog/model/Comments.dart';
 import 'package:microblog/model/Post.dart';
 
 class PostApiProvider {
-  static const url = 'http://192.168.1.223:8080/api/v2/posts/';
+  static const url = 'http://192.168.1.149:8080/api/v2/posts/';
   final storage = FlutterSecureStorage();
 
   Future<List<Post>> findAllPosts() async {
-    String s = await storage.read(key: "jwt");
-    final response =
-        await http.get(url, headers: {"Authorization": 'Bearer ' + s});
-    Iterable l = json.decode(response.body);
+    //String s = await storage.read(key: "jwt");
+    //, headers: {"Authorization": 'Bearer ' + s}d
+
+    final response = await http.get(url);
+    Iterable l = json.decode(response.body)['body']['response'];
     List<Post> posts = l.map((model) => Post.fromJson(model)).toList();
     return posts;
   }
 
   Future<List<Comment>> findAllCommentsOfPost(int id) async {
-    String s = await storage.read(key: "jwt");
-    final response = await http.get(url + 'commenti/' + id.toString(),
-        headers: {"Authorization": 'Bearer ' + s});
-    Iterable l = json.decode(response.body);
+    final response = await http.get(url + '$id' + '/comments');
+    Iterable l = json.decode(response.body)['body']['response'];
     List<Comment> commenti = l.map((model) => Comment.fromJson(model)).toList();
 
     return commenti;

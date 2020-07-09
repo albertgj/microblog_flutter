@@ -1,13 +1,13 @@
-import 'package:microblog/model/Persone.dart';
+import 'package:microblog/model/User.dart';
 
 class Post {
   int id;
   String titolo;
   String data;
   String text;
-  Persona persona;
+  User user;
 
-  Post({this.id, this.titolo, this.data, this.text, this.persona});
+  Post({this.id, this.titolo, this.data, this.text, this.user});
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -15,8 +15,8 @@ class Post {
       titolo: json['titolo'],
       data: json['data'],
       text: json['text'],
-      persona: Persona.fromJson(
-        json['persona'],
+      user: User.fromJson(
+        json['user'],
       ),
     );
   }
@@ -27,7 +27,7 @@ class Post {
       'titolo': titolo,
       'data': data,
       'text': text,
-      'persona': persona
+      'user': user
     };
   }
 
@@ -47,8 +47,8 @@ class Post {
     return this.text;
   }
 
-  Persona get getPersona {
-    return this.persona;
+  User get getUser {
+    return this.user;
   }
 
   set setId(int id) {
@@ -67,7 +67,7 @@ class Post {
     this.text = text;
   }
 
-  set setPersona(Persona persona) {
-    this.persona = persona;
+  set setUser(User user) {
+    this.user = user;
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:microblog/blocs/PostBloc.dart';
-import 'package:microblog/model/Persone.dart';
+import 'package:microblog/model/User.dart';
 import 'package:microblog/model/Post.dart';
 
 class AddPost extends StatefulWidget {
@@ -62,10 +61,8 @@ class _AddPostState extends State<AddPost> {
                     ),
                     color: Color.fromRGBO(64, 75, 96, .9),
                     onPressed: () {
-                      Persona p = new Persona(id: 1, username: "aaa", password: "aaa");
-                      Post post = new Post(persona: p, data: "", text: text.text, titolo: titolo.text);
-                      bloc.savePost(post);
-                      bloc.saveAPost;
+                      User p = new User(id: 1, username: "aaa");
+                      Post post = new Post(user: p, data: "", text: text.text, titolo: titolo.text);
                     },
                   ),
                 ),

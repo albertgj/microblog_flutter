@@ -1,73 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:microblog/blocs/PostBloc.dart';
 import 'package:microblog/model/Post.dart';
 import 'package:microblog/view/AddPost.dart';
+import 'package:microblog/view/BaseView.dart';
 import 'package:microblog/view/PostDetail.dart';
+import 'package:microblog/viewmodel/HomeModel.dart';
+import 'package:microblog/viewmodel/ViewState.dart';
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    bloc.fetchAllPosts();
-  }
-
-  @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("MicroBlog"),
-      ),
-      body: StreamBuilder(
-        stream: bloc.allPosts,
-        builder: (context, AsyncSnapshot<List<Post>> snapshot) {
-          if (snapshot.hasData) {
-            return buildList(snapshot);
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error),
+    return BaseView<HomeModel>(
+      onModelReady: (model) {
+        model.getPosts();
+      },
+      builder: (ctx, model, child) => Scaffold(
+        appBar: AppBar(
+          title: Text("MicroBlog"),
+        ),
+        drawer: drawer(context),
+        body: model.state == ViewState.Idle
+            ? buildList(model.posts)
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPost(),
+              ),
             );
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddPost(),
-            ),
-          );
-        },
-        child: Icon(Icons.add),
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
 
-  Widget buildList(AsyncSnapshot<List<Post>> snapshot) {
+  Widget drawer(ctx) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Text("Hello"),
+            decoration: BoxDecoration(color: Colors.blue),
+          ),
+          ListTile(
+            title: Text("Login"),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.pushNamed(ctx, 'login');
+              //Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text("Home"),
+            onTap: () {
+              print("U clicked me");
+            },
+          ),
+          ListTile(
+            title: Text("Change theme"),
+            trailing: Switch(
+              value: true,
+              onChanged: (value) {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildList(List<Post> lista) {
     return ListView.builder(
-      itemCount: snapshot.data.length,
+      itemCount: lista.length,
       itemBuilder: (context, index) {
         return Card(
           elevation: 8.0,
           margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Color.fromRGBO(64, 75, 96, .9),
+              color: Colors.blue,
             ),
             child: ListTile(
               contentPadding:
@@ -85,16 +100,16 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
               title: Text(
-                snapshot.data[index].titolo,
+                lista[index].titolo,
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               subtitle: Row(
                 children: <Widget>[
                   Icon(Icons.person, color: Colors.yellowAccent),
                   Text(
-                    " ${snapshot.data[index].persona.username}",
-                    style: snapshot.data[index].persona.username == 'aaa'
+                    " ${lista[index].user.username}",
+                    style: lista[index].user.username == 'aaa'
                         ? TextStyle(color: Colors.yellowAccent)
                         : TextStyle(color: Colors.white),
                   )
@@ -111,11 +126,11 @@ class _MyAppState extends State<MyApp> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => PostDetail(
-                        id: snapshot.data[index].id,
-                        data: snapshot.data[index].data,
-                        titolo: snapshot.data[index].titolo,
-                        persona: snapshot.data[index].persona,
-                        text: snapshot.data[index].text,
+                        id: lista[index].id,
+                        data: lista[index].data,
+                        titolo: lista[index].titolo,
+                        user: lista[index].user,
+                        text: lista[index].text,
                       ),
                     ),
                   );

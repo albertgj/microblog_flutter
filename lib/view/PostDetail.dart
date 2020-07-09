@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:microblog/blocs/PostBloc.dart';
 import 'package:microblog/model/Comments.dart';
-import 'package:microblog/model/Persone.dart';
+import 'package:microblog/model/User.dart';
+import 'package:microblog/service/PostApiProvider.dart';
 
 class PostDetail extends StatefulWidget {
   final int id;
   final String titolo;
   final String data;
   final String text;
-  final Persona persona;
+  final User user;
 
-  PostDetail({this.id, this.titolo, this.data, this.text, this.persona});
+  PostDetail({this.id, this.titolo, this.data, this.text, this.user});
 
   @override
   _PostDetailState createState() => _PostDetailState();
 }
 
 class _PostDetailState extends State<PostDetail> {
+  Future<List<Comment>> listComments;
+
   @override
   void initState() {
-    bloc.findAllCommentsOfPost(widget.id);
+    listComments = PostApiProvider().findAllCommentsOfPost(widget.id);
     super.initState();
   }
 
   @override
   void dispose() {
-    //bloc.dispose();
     super.dispose();
   }
 
@@ -35,12 +36,13 @@ class _PostDetailState extends State<PostDetail> {
       appBar: AppBar(
         title: Text("Post"),
       ),
-      body: StreamBuilder(
-        stream: bloc.commentsOfPost,
+      body: FutureBuilder(
+        future: listComments,
         builder: (context, AsyncSnapshot<List<Comment>> snapshot) {
           if (snapshot.hasData) {
             return buildList(snapshot);
           }
+
           if (snapshot.hasError) {
             return Center(
               child: Text(snapshot.error),
@@ -59,9 +61,7 @@ class _PostDetailState extends State<PostDetail> {
       itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
         return Column(
-          children: <Widget>[
-            Text("TEST")
-          ],
+          children: <Widget>[Text("TEST")],
         );
       },
     );
