@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:microblog/model/Post.dart';
-import 'package:microblog/view/AddPost.dart';
 import 'package:microblog/view/BaseView.dart';
-import 'package:microblog/view/PostDetail.dart';
 import 'package:microblog/viewmodel/HomeModel.dart';
 import 'package:microblog/viewmodel/ViewState.dart';
 
-class MyApp extends StatelessWidget {
+class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseView<HomeModel>(
@@ -25,12 +23,7 @@ class MyApp extends StatelessWidget {
               ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddPost(),
-              ),
-            );
+            Navigator.pushNamed(context, 'post');
           },
           child: Icon(Icons.add),
         ),
@@ -122,10 +115,18 @@ class MyApp extends StatelessWidget {
                   size: 30.0,
                 ),
                 onPressed: () {
+                  Post p = Post(
+                      id: lista[index].id,
+                      data: lista[index].data,
+                      titolo: lista[index].titolo,
+                      user: lista[index].user,
+                      text: lista[index].text);
+                  Navigator.pushNamed(context, 'post', arguments: p);
+                  /*
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PostDetail(
+                      builder: (context) => CommentView(
                         id: lista[index].id,
                         data: lista[index].data,
                         titolo: lista[index].titolo,
@@ -134,6 +135,7 @@ class MyApp extends StatelessWidget {
                       ),
                     ),
                   );
+                  */
                 },
               ),
             ),

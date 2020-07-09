@@ -3,7 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:microblog/Locator.dart';
 import 'package:microblog/MyTest.dart';
 import 'package:microblog/Router.dart';
-import 'package:microblog/view/MainView.dart';
+import 'package:microblog/view/HomeView.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   //final storage = FlutterSecureStorage();
@@ -13,10 +14,10 @@ void main() {
     MaterialApp(
       title: 'MicroBlog',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
+      theme: ThemeData.dark(),
       initialRoute: '/',
       onGenerateRoute: Router.generatedRoute,
-      home: MyApp(),
+      home: HomeView(),
     ),
   );
 }

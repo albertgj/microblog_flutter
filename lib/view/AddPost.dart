@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:microblog/model/User.dart';
-import 'package:microblog/model/Post.dart';
 
 class AddPost extends StatefulWidget {
   @override
@@ -61,8 +59,8 @@ class _AddPostState extends State<AddPost> {
                     ),
                     color: Color.fromRGBO(64, 75, 96, .9),
                     onPressed: () {
-                      User p = new User(id: 1, username: "aaa");
-                      Post post = new Post(user: p, data: "", text: text.text, titolo: titolo.text);
+                      //User p = new User(id: 1, username: "aaa");
+                      //Post post = new Post(user: p, data: "", text: text.text, titolo: titolo.text);
                     },
                   ),
                 ),
