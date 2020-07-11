@@ -27,7 +27,7 @@ class Post {
       'titolo': titolo,
       'data': data,
       'text': text,
-      'user': user
+      'user': user.toJson()
     };
   }
 

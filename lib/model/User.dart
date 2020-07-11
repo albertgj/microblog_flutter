@@ -8,10 +8,24 @@ class User {
 
   factory User.fromJson(Map json) {
     return User(
-        id: json['id'], username: json['username'], password: json['password'], roles: json['roles']);
+        id: json['id'],
+        username: json['username'],
+        password: json['password'],
+        roles: json['roles']);
+  }
+
+  Map<String, dynamic> registerUser() {
+    return {
+      'username': username,
+      'password': password,
+      'role': ['user']
+    };
   }
 
   Map<String, dynamic> toJson() {
-    return {'username': username, 'password': password};
+    return {
+      'id': id,
+      'username': username,
+    };
   }
 }

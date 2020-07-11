@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:microblog/model/Post.dart';
+import 'package:microblog/model/User.dart';
+import 'package:microblog/service/Api.dart';
 
 class AddPost extends StatefulWidget {
+  final String token;
+
+  AddPost({this.token});
+
   @override
   _AddPostState createState() => _AddPostState();
 }
 
 class _AddPostState extends State<AddPost> {
   TextEditingController titolo;
-  TextEditingController data;
   TextEditingController text;
+  Api _api = GetIt.I<Api>();
 
   @override
   void initState() {
     titolo = TextEditingController();
-    data = TextEditingController();
     text = TextEditingController();
     super.initState();
   }
@@ -27,7 +35,7 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Aggiungi post"),
+        title: Text("Add a post"),
       ),
       body: Container(
         child: Padding(
@@ -37,11 +45,6 @@ class _AddPostState extends State<AddPost> {
               TextField(
                 key: UniqueKey(),
                 controller: titolo,
-                onTap: () {},
-              ),
-              TextField(
-                controller: data,
-                key: UniqueKey(),
                 onTap: () {},
               ),
               TextField(
@@ -55,12 +58,22 @@ class _AddPostState extends State<AddPost> {
                   child: MaterialButton(
                     child: Text(
                       "AGGIUNGI",
-                      style: TextStyle(color: Colors.yellowAccent),
                     ),
-                    color: Color.fromRGBO(64, 75, 96, .9),
+                    color: Colors.blue,
                     onPressed: () {
-                      //User p = new User(id: 1, username: "aaa");
-                      //Post post = new Post(user: p, data: "", text: text.text, titolo: titolo.text);
+                      User u = User(
+                        id: Jwt.parseJwt(widget.token)['user_id'],
+                        username: Jwt.parseJwt(widget.token)['sub'],
+                      );
+
+                      Post post = Post(
+                        user: u,
+                        data: "2020-07-11 15:00:00",
+                        text: text.text,
+                        titolo: titolo.text,
+                      );
+
+                      _api.savePost(post, widget.token);
                     },
                   ),
                 ),

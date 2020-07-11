@@ -18,13 +18,10 @@ class MyTest extends StatelessWidget {
             Text("Hello"),
             FlatButton(
                 onPressed: () {
-
                   http
                       .get('http://192.168.1.149:8080/api/v2/posts')
                       .then((res) => print(json.decode(res.body)))
                       .catchError((error) => print(error));
-
-      
                 },
                 child: Text("Click Me To retrive"))
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:microblog/view/AddPost.dart';
 import 'package:microblog/view/LoginView.dart';
 import 'package:microblog/view/HomeView.dart';
 import 'package:microblog/view/CommentView.dart';
@@ -24,6 +25,12 @@ class Router {
             titolo: post.titolo,
             user: post.user,
           ),
+        );
+        break;
+      case 'addPost':
+        var token = settings.arguments;
+        return MaterialPageRoute(
+          builder: (_) => AddPost(token: token),
         );
         break;
       default:

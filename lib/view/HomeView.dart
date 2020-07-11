@@ -1,74 +1,132 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:microblog/model/Post.dart';
-import 'package:microblog/view/BaseView.dart';
-import 'package:microblog/viewmodel/HomeModel.dart';
-import 'package:microblog/viewmodel/ViewState.dart';
+import 'package:microblog/service/Api.dart';
+import 'package:microblog/service/AuthenticationService.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  Api _api = GetIt.I.get<Api>();
+  Future<List<Post>> postList;
+  FlutterSecureStorage storage = FlutterSecureStorage();
+  Future<String> token;
+
+  @override
+  void initState() {
+    postList = _api.findAllPosts();
+    token = AuthenticationService().getToken();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BaseView<HomeModel>(
-      onModelReady: (model) {
-        model.getPosts();
-      },
-      builder: (ctx, model, child) => Scaffold(
-        appBar: AppBar(
-          title: Text("MicroBlog"),
-        ),
-        drawer: drawer(context),
-        body: model.state == ViewState.Idle
-            ? buildList(model.posts)
-            : Center(
-                child: CircularProgressIndicator(),
-              ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'post');
-          },
-          child: Icon(Icons.add),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("MicroBlog"),
       ),
-    );
-  }
+      drawer: drawer(),
+      body: FutureBuilder(
+        future: postList,
+        builder: (context, AsyncSnapshot<List<Post>> snapshot) {
+          if (snapshot.hasData) {
+            return buildList(snapshot);
+          }
 
-  Widget drawer(ctx) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text("Hello"),
-            decoration: BoxDecoration(color: Colors.blue),
-          ),
-          ListTile(
-            title: Text("Login"),
-            trailing: Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.pushNamed(ctx, 'login');
-              //Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Text("Home"),
-            onTap: () {
-              print("U clicked me");
-            },
-          ),
-          ListTile(
-            title: Text("Change theme"),
-            trailing: Switch(
-              value: true,
-              onChanged: (value) {},
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error),
+            );
+          }
+
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+      floatingActionButton: token == null
+          ? null
+          : FutureBuilder(
+              future: token,
+              builder: (context, snapshot) {
+                return FloatingActionButton(
+                  child: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      'addPost',
+                      arguments: '${snapshot.data}',
+                    );
+                  },
+                );
+              },
             ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget buildList(List<Post> lista) {
+  Widget drawer() {
+    return FutureBuilder(
+      future: token,
+      builder: (context, snapshot) {
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: snapshot.data == null
+                    ? Text("")
+                    : Text('Hello ${Jwt.parseJwt(snapshot.data)['sub']}'),
+                decoration: BoxDecoration(color: Colors.blue),
+              ),
+              snapshot.data == null
+                  ? ListTile(
+                      title: Text("Login"),
+                      trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, 'login');
+                      },
+                    )
+                  : ListTile(
+                      title: Text("Logout"),
+                      trailing: Icon(Icons.exit_to_app),
+                      onTap: () {
+                        storage.delete(key: "token");
+                        setState(() {
+                          token = null;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+              ListTile(
+                title: Text("Home"),
+                onTap: () {
+                  print("U clicked me");
+                },
+              ),
+              ListTile(
+                title: Text("Change theme"),
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildList(AsyncSnapshot<List<Post>> snapshot) {
     return ListView.builder(
-      itemCount: lista.length,
+      itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
         return Card(
           elevation: 8.0,
@@ -93,7 +151,7 @@ class HomeView extends StatelessWidget {
                 ),
               ),
               title: Text(
-                lista[index].titolo,
+                snapshot.data[index].titolo,
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
@@ -101,8 +159,8 @@ class HomeView extends StatelessWidget {
                 children: <Widget>[
                   Icon(Icons.person, color: Colors.yellowAccent),
                   Text(
-                    " ${lista[index].user.username}",
-                    style: lista[index].user.username == 'aaa'
+                    " ${snapshot.data[index].user.username}",
+                    style: snapshot.data[index].user.username == 'aaa'
                         ? TextStyle(color: Colors.yellowAccent)
                         : TextStyle(color: Colors.white),
                   )
@@ -116,26 +174,12 @@ class HomeView extends StatelessWidget {
                 ),
                 onPressed: () {
                   Post p = Post(
-                      id: lista[index].id,
-                      data: lista[index].data,
-                      titolo: lista[index].titolo,
-                      user: lista[index].user,
-                      text: lista[index].text);
+                      id: snapshot.data[index].id,
+                      data: snapshot.data[index].data,
+                      titolo: snapshot.data[index].titolo,
+                      user: snapshot.data[index].user,
+                      text: snapshot.data[index].text);
                   Navigator.pushNamed(context, 'post', arguments: p);
-                  /*
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CommentView(
-                        id: lista[index].id,
-                        data: lista[index].data,
-                        titolo: lista[index].titolo,
-                        user: lista[index].user,
-                        text: lista[index].text,
-                      ),
-                    ),
-                  );
-                  */
                 },
               ),
             ),
